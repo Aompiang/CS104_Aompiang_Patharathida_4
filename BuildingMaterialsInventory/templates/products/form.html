@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}{% if product %}Edit{% else %}Add{% endif %} Product - Building Materials Inventory{% endblock %}
+
+{% block content %}
+<h2>
+    {% if product %}
+        <i class="bi bi-pencil"></i> Edit Product: {{ product['name'] }}
+    {% else %}
+        <i class="bi bi-plus-circle"></i> Add New Product
+    {% endif %}
+</h2>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <form method="POST" class="card p-4">
+            <div class="mb-3">
+                <label for="sku" class="form-label">SKU <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="sku" name="sku" required
+                       value="{{ product['sku'] if product else '' }}">
+                <small class="text-muted">e.g., SKU001</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="name" name="name" required
+                       value="{{ product['name'] if product else '' }}">
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
+                    <select class="form-control" id="category_id" name="category_id" required>
+                        <option value="">-- Select Category --</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat['category_id'] }}" 
+                                {% if product and product['category_id'] == cat['category_id'] %}selected{% endif %}>
+                                {{ cat['name'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="supplier_id" class="form-label">Supplier</label>
+                    <select class="form-control" id="supplier_id" name="supplier_id">
+                        <option value="">-- Select Supplier --</option>
+                        {% for sup in suppliers %}
+                            <option value="{{ sup['supplier_id'] }}"
+                                {% if product and product['supplier_id'] == sup['supplier_id'] %}selected{% endif %}>
+                                {{ sup['name'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="unit" class="form-label">Unit</label>
+                    <input type="text" class="form-control" id="unit" name="unit"
+                           placeholder="e.g., pcs, kg, m, box"
+                           value="{{ product['unit'] if product else '' }}">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="cost_price" class="form-label">Cost Price <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="cost_price" name="cost_price" required
+                           step="0.01" value="{{ product['cost_price'] if product else '' }}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="sell_price" class="form-label">Selling Price <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="sell_price" name="sell_price" required
+                           step="0.01" value="{{ product['sell_price'] if product else '' }}">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="initial_quantity" class="form-label">Initial Quantity <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="initial_quantity" name="initial_quantity" required
+                           value="{{ product['initial_quantity'] if product else '' }}">
+                    <small class="text-muted">Amount ordered initially (for low-stock calculation)</small>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="stock" class="form-label">Current Stock <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="stock" name="stock" required
+                           value="{{ product['stock'] if product else '' }}">
+                </div>
+            </div>
+
+            <div class="alert alert-info" role="alert">
+                <strong>Low Stock Definition:</strong> When current stock drops below 30% of the initial quantity.
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> {{ 'Update' if product else 'Create' }} Product
+                </button>
+                <a href="{{ url_for('list_products') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 bg-light">
+            <h5>Help</h5>
+            <ul class="text-muted small">
+                <li><strong>SKU:</strong> Unique product code</li>
+                <li><strong>Initial Quantity:</strong> The amount you originally ordered</li>
+                <li><strong>Low Stock Alert:</strong> Triggers when stock < 30% of initial</li>
+                <li><strong>Example:</strong> If initial = 100, low stock = < 30 units</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
